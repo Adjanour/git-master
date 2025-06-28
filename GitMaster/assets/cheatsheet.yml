@@ -1,0 +1,310 @@
+topics:
+  basics:
+    title: "Basic Git Commands"
+    description: "Essential Git commands for everyday use"
+    commands:
+      - name: "git init"
+        syntax: "git init [directory]"
+        description: "Initialize a new Git repository"
+        examples:
+          - command: "git init"
+            description: "Initialize repository in current directory"
+          - command: "git init my-project"
+            description: "Initialize repository in new directory"
+        tags: ["initialize", "create", "repository"]
+
+      - name: "git clone"
+        syntax: "git clone <url> [directory]"
+        description: "Clone a repository into a new directory"
+        examples:
+          - command: "git clone https://github.com/user/repo.git"
+            description: "Clone repository from GitHub"
+          - command: "git clone git@github.com:user/repo.git my-folder"
+            description: "Clone into specific directory"
+        tags: ["clone", "download", "copy"]
+
+      - name: "git add"
+        syntax: "git add <file|directory|pattern>"
+        description: "Add file contents to the staging area"
+        examples:
+          - command: "git add ."
+            description: "Add all changes in current directory"
+          - command: "git add file.txt"
+            description: "Add specific file"
+          - command: "git add *.js"
+            description: "Add all JavaScript files"
+        tags: ["stage", "add", "track"]
+
+      - name: "git commit"
+        syntax: "git commit [options]"
+        description: "Record changes to the repository"
+        examples:
+          - command: "git commit -m \"Add new feature\""
+            description: "Commit with message"
+          - command: "git commit -am \"Fix bug\""
+            description: "Add and commit modified files"
+          - command: "git commit --amend"
+            description: "Amend the last commit"
+        tags: ["commit", "save", "record"]
+
+      - name: "git status"
+        syntax: "git status [options]"
+        description: "Show the working tree status"
+        examples:
+          - command: "git status"
+            description: "Show full status"
+          - command: "git status -s"
+            description: "Show short status"
+        tags: ["status", "check", "state"]
+
+      - name: "git log"
+        syntax: "git log [options]"
+        description: "Show commit logs"
+        examples:
+          - command: "git log"
+            description: "Show commit history"
+          - command: "git log --oneline"
+            description: "Show condensed history"
+          - command: "git log --graph --all"
+            description: "Show visual branch history"
+        tags: ["history", "log", "commits"]
+
+      - name: "git diff"
+        syntax: "git diff [options] [commit] [path...]"
+        description: "Show changes between commits, commit and working tree, etc"
+        examples:
+          - command: "git diff"
+            description: "Show unstaged changes"
+          - command: "git diff --staged"
+            description: "Show staged changes"
+          - command: "git diff HEAD~1"
+            description: "Compare with previous commit"
+        tags: ["diff", "changes", "compare"]
+
+      - name: "git push"
+        syntax: "git push [remote] [branch]"
+        description: "Update remote refs along with associated objects"
+        examples:
+          - command: "git push"
+            description: "Push current branch to upstream"
+          - command: "git push origin main"
+            description: "Push main branch to origin"
+          - command: "git push -u origin feature"
+            description: "Push and set upstream"
+        tags: ["push", "upload", "remote"]
+
+      - name: "git pull"
+        syntax: "git pull [remote] [branch]"
+        description: "Fetch from and integrate with another repository or local branch"
+        examples:
+          - command: "git pull"
+            description: "Pull from upstream"
+          - command: "git pull origin main"
+            description: "Pull main branch from origin"
+          - command: "git pull --rebase"
+            description: "Pull with rebase instead of merge"
+        tags: ["pull", "download", "fetch", "merge"]
+
+  branching:
+    title: "Branch Management"
+    description: "Commands for creating, switching, and managing branches"
+    commands:
+      - name: "git branch"
+        syntax: "git branch [options] [branch-name]"
+        description: "List, create, or delete branches"
+        examples:
+          - command: "git branch"
+            description: "List all local branches"
+          - command: "git branch new-feature"
+            description: "Create new branch"
+          - command: "git branch -d old-feature"
+            description: "Delete branch (safe)"
+          - command: "git branch -D force-delete"
+            description: "Force delete branch"
+        tags: ["branch", "create", "delete", "list"]
+
+      - name: "git checkout"
+        syntax: "git checkout [options] <branch|commit>"
+        description: "Switch branches or restore working tree files"
+        examples:
+          - command: "git checkout main"
+            description: "Switch to main branch"
+          - command: "git checkout -b new-feature"
+            description: "Create and switch to new branch"
+          - command: "git checkout -- file.txt"
+            description: "Restore file from HEAD"
+        tags: ["checkout", "switch", "restore"]
+
+      - name: "git switch"
+        syntax: "git switch [options] <branch>"
+        description: "Switch branches (modern alternative to checkout)"
+        examples:
+          - command: "git switch main"
+            description: "Switch to main branch"
+          - command: "git switch -c new-feature"
+            description: "Create and switch to new branch"
+          - command: "git switch -"
+            description: "Switch to previous branch"
+        tags: ["switch", "checkout", "branch"]
+
+      - name: "git merge"
+        syntax: "git merge [options] <branch>"
+        description: "Join two or more development histories together"
+        examples:
+          - command: "git merge feature-branch"
+            description: "Merge feature branch into current"
+          - command: "git merge --no-ff feature"
+            description: "Force create merge commit"
+          - command: "git merge --squash feature"
+            description: "Squash commits before merging"
+        tags: ["merge", "combine", "join"]
+
+  rebase:
+    title: "Rebasing and History Modification"
+    description: "Commands for rebasing and modifying commit history"
+    commands:
+      - name: "git rebase"
+        syntax: "git rebase [options] <upstream> [branch]"
+        description: "Reapply commits on top of another base tip"
+        examples:
+          - command: "git rebase main"
+            description: "Rebase current branch onto main"
+          - command: "git rebase -i HEAD~3"
+            description: "Interactive rebase last 3 commits"
+          - command: "git rebase --continue"
+            description: "Continue rebase after resolving conflicts"
+          - command: "git rebase --abort"
+            description: "Abort current rebase operation"
+        tags: ["rebase", "history", "interactive"]
+
+      - name: "git cherry-pick"
+        syntax: "git cherry-pick [options] <commit>"
+        description: "Apply the changes introduced by some existing commits"
+        examples:
+          - command: "git cherry-pick abc1234"
+            description: "Apply specific commit"
+          - command: "git cherry-pick abc1234..def5678"
+            description: "Apply range of commits"
+        tags: ["cherry-pick", "apply", "commit"]
+
+      - name: "git reset"
+        syntax: "git reset [options] [commit]"
+        description: "Reset current HEAD to the specified state"
+        examples:
+          - command: "git reset --soft HEAD~1"
+            description: "Undo last commit, keep changes staged"
+          - command: "git reset --mixed HEAD~1"
+            description: "Undo last commit and unstage changes"
+          - command: "git reset --hard HEAD~1"
+            description: "Undo last commit and discard changes"
+        tags: ["reset", "undo", "history"]
+
+  remote:
+    title: "Remote Repository Management"
+    description: "Commands for working with remote repositories"
+    commands:
+      - name: "git remote"
+        syntax: "git remote [options]"
+        description: "Manage set of tracked repositories"
+        examples:
+          - command: "git remote -v"
+            description: "List all remotes with URLs"
+          - command: "git remote add upstream https://github.com/original/repo.git"
+            description: "Add new remote"
+          - command: "git remote remove origin"
+            description: "Remove remote"
+        tags: ["remote", "origin", "upstream"]
+
+      - name: "git fetch"
+        syntax: "git fetch [remote] [branch]"
+        description: "Download objects and refs from another repository"
+        examples:
+          - command: "git fetch"
+            description: "Fetch from default remote"
+          - command: "git fetch origin"
+            description: "Fetch from origin"
+          - command: "git fetch --all"
+            description: "Fetch from all remotes"
+        tags: ["fetch", "download", "remote"]
+
+  stash:
+    title: "Stashing Changes"
+    description: "Commands for temporarily storing uncommitted changes"
+    commands:
+      - name: "git stash"
+        syntax: "git stash [options]"
+        description: "Stash the changes in a dirty working directory away"
+        examples:
+          - command: "git stash"
+            description: "Stash current changes"
+          - command: "git stash -m \"Work in progress\""
+            description: "Stash with message"
+          - command: "git stash -u"
+            description: "Include untracked files"
+        tags: ["stash", "save", "temporary"]
+
+      - name: "git stash pop"
+        syntax: "git stash pop [stash]"
+        description: "Apply stashed changes and remove from stash list"
+        examples:
+          - command: "git stash pop"
+            description: "Apply most recent stash"
+          - command: "git stash pop stash@{1}"
+            description: "Apply specific stash"
+        tags: ["stash", "apply", "restore"]
+
+      - name: "git stash list"
+        syntax: "git stash list"
+        description: "List all stashes"
+        examples:
+          - command: "git stash list"
+            description: "Show all stashes"
+        tags: ["stash", "list", "show"]
+
+  reset:
+    title: "Reset and Revert Operations"
+    description: "Commands for undoing changes and resetting state"
+    commands:
+      - name: "git revert"
+        syntax: "git revert [options] <commit>"
+        description: "Create new commit that undoes changes from previous commits"
+        examples:
+          - command: "git revert HEAD"
+            description: "Revert last commit"
+          - command: "git revert abc1234"
+            description: "Revert specific commit"
+          - command: "git revert --no-commit HEAD~3..HEAD"
+            description: "Revert multiple commits without committing"
+        tags: ["revert", "undo", "safe"]
+
+      - name: "git clean"
+        syntax: "git clean [options]"
+        description: "Remove untracked files from working tree"
+        examples:
+          - command: "git clean -n"
+            description: "Show what would be deleted (dry run)"
+          - command: "git clean -f"
+            description: "Force delete untracked files"
+          - command: "git clean -fd"
+            description: "Delete untracked files and directories"
+        tags: ["clean", "remove", "untracked"]
+
+  hooks:
+    title: "Git Hooks and Automation"
+    description: "Information about Git hooks and automation"
+    commands:
+      - name: "pre-commit hook"
+        syntax: ".git/hooks/pre-commit"
+        description: "Script executed before each commit"
+        examples:
+          - command: "#!/bin/sh\nnpm test"
+            description: "Run tests before commit"
+        tags: ["hooks", "pre-commit", "automation"]
+
+      - name: "post-receive hook"
+        syntax: ".git/hooks/post-receive"
+        description: "Script executed after receiving a push"
+        examples:
+          - command: "#!/bin/sh\ncd /var/www && git pull"
+            description: "Deploy after push"
+        tags: ["hooks", "post-receive", "deploy"]

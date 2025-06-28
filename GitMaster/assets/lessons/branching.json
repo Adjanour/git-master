@@ -1,0 +1,130 @@
+{
+  "title": "Git Branching - Parallel Development",
+  "theory": "Branches in Git allow you to diverge from the main line of development and work on features or experiments in isolation. Think of branches as parallel universes of your code where you can make changes without affecting the main codebase.\n\n### Key Concepts\n\n**Branch**: An independent line of development. Each branch represents a different version of your project.\n\n**HEAD**: A pointer that indicates which branch you're currently on and which commit you're looking at.\n\n**Merge**: The process of combining changes from one branch into another.\n\n**Fast-forward**: When Git can move the branch pointer forward without creating a merge commit.\n\n### Why Use Branches?\n\n- Isolate features or experiments\n- Collaborate without conflicts\n- Maintain a stable main branch\n- Review changes before integration\n- Roll back features easily\n\n### Branch Naming Conventions\n\n- `feature/user-authentication`\n- `bugfix/login-error`\n- `hotfix/security-patch`\n- `release/v2.0`",
+  "examples": [
+    {
+      "title": "Creating and Switching Branches",
+      "description": "Learn how to create new branches and switch between them.",
+      "code": "# Create a new branch\ngit branch feature/new-login\n\n# List all branches (* shows current branch)\ngit branch\n\n# Switch to the new branch\ngit checkout feature/new-login\n\n# Or create and switch in one command\ngit checkout -b feature/user-profile\n\n# Check current branch\ngit branch --show-current",
+      "output": "* main\n  feature/new-login\n\nSwitched to branch 'feature/new-login'\n\nSwitched to a new branch 'feature/user-profile'\n\nfeature/user-profile",
+      "explanation": "Branches allow you to work on different features simultaneously. The asterisk (*) shows your current branch.",
+      "diagram": [
+        "Before branching:",
+        "main:     A---B---C",
+        "               ^",
+        "             HEAD",
+        "",
+        "After creating feature branch:",
+        "main:        A---B---C",
+        "                  \\",
+        "feature:           D---E",
+        "                       ^",
+        "                     HEAD"
+      ]
+    },
+    {
+      "title": "Making Changes on a Branch",
+      "description": "Work on your feature branch without affecting the main branch.",
+      "code": "# Make sure you're on your feature branch\ngit checkout feature/user-profile\n\n# Create and edit a new file\necho \"# User Profile Feature\" > user-profile.md\necho \"This will handle user profiles\" >> user-profile.md\n\n# Stage and commit changes\ngit add user-profile.md\ngit commit -m \"Add user profile feature\"\n\n# Check the branch history\ngit log --oneline\n\n# Switch back to main and see the difference\ngit checkout main\nls  # user-profile.md won't be here",
+      "output": "[feature/user-profile abc123d] Add user profile feature\n 1 file changed, 2 insertions(+)\n create mode 100644 user-profile.md\n\nabc123d Add user profile feature\na1b2c3d Initial commit: Add README\n\n# On main branch - no user-profile.md",
+      "explanation": "Changes made on a branch stay on that branch until merged. This keeps your main branch clean and stable.",
+      "diagram": [
+        "Branch development:",
+        "main:        A---B---C",
+        "                  \\",
+        "feature:           D---E (user-profile.md added)",
+        "",
+        "Main branch unchanged:",
+        "main:        A---B---C (no user-profile.md)",
+        "                  \\",
+        "feature:           D---E"
+      ]
+    },
+    {
+      "title": "Merging Branches",
+      "description": "Integrate your feature branch back into the main branch.",
+      "code": "# Switch to the target branch (main)\ngit checkout main\n\n# Merge the feature branch\ngit merge feature/user-profile\n\n# Check the merged history\ngit log --oneline --graph\n\n# Clean up: delete the feature branch\ngit branch -d feature/user-profile\n\n# List remaining branches\ngit branch",
+      "output": "Updating a1b2c3d..abc123d\nFast-forward\n user-profile.md | 2 ++\n 1 file changed, 2 insertions(+)\n create mode 100644 user-profile.md\n\n* abc123d Add user profile feature\n* a1b2c3d Initial commit: Add README\n\nDeleted branch feature/user-profile (was abc123d).\n\n* main",
+      "explanation": "Merging brings changes from the feature branch into main. Fast-forward means Git simply moves the main pointer forward since there were no conflicting changes.",
+      "diagram": [
+        "Before merge:",
+        "main:        A---B---C",
+        "                  \\",
+        "feature:           D---E",
+        "",
+        "After fast-forward merge:",
+        "main:        A---B---C---D---E",
+        "                           ^",
+        "                         HEAD"
+      ]
+    },
+    {
+      "title": "Handling Merge Conflicts",
+      "description": "Learn how to resolve conflicts when branches have competing changes.",
+      "code": "# Create two branches that modify the same file\ngit checkout -b feature/update-readme\necho \"## Features\" >> README.md\ngit add README.md\ngit commit -m \"Add features section\"\n\n# Switch to main and make different changes\ngit checkout main\necho \"## Installation\" >> README.md\ngit add README.md\ngit commit -m \"Add installation section\"\n\n# Try to merge - this will cause a conflict\ngit merge feature/update-readme\n\n# Check conflict status\ngit status\n\n# View the conflicted file\ncat README.md",
+      "output": "Auto-merging README.md\nCONFLICT (content): Merge conflict in README.md\nAutomatic merge failed; fix conflicts and then commit the result.\n\nOn branch main\nYou have unmerged paths.\n  (fix conflicts and run \"git commit\")\n\nUnmerged paths:\n  (use \"git add <file>...\" to mark resolution)\n\tboth modified:   README.md\n\n# My Project\n<<<<<<< HEAD\n## Installation\n=======\n## Features\n>>>>>>> feature/update-readme",
+      "explanation": "Conflicts occur when the same lines are modified in different branches. Git marks the conflicting sections and requires manual resolution.",
+      "diagram": [
+        "Conflicting changes:",
+        "main:     A---B---C---D (Installation)",
+        "               \\",
+        "feature:        E---F (Features)",
+        "",
+        "Conflict markers in file:",
+        "<<<<<<< HEAD",
+        "## Installation",
+        "=======", 
+        "## Features",
+        ">>>>>>> feature/update-readme"
+      ]
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "question": "What command creates a new branch AND switches to it?",
+        "options": [
+          "git branch -c new-branch",
+          "git checkout -b new-branch", 
+          "git switch --create new-branch",
+          "Both B and C are correct"
+        ],
+        "correctAnswer": 3,
+        "explanation": "Both `git checkout -b new-branch` and `git switch --create new-branch` create and switch to a new branch in one command. `git switch` is the newer, more intuitive command."
+      },
+      {
+        "question": "What does a fast-forward merge mean?",
+        "options": [
+          "The merge happens very quickly",
+          "Git can move the branch pointer forward without creating a merge commit",
+          "It's a type of merge that skips files",
+          "It automatically resolves all conflicts"
+        ],
+        "correctAnswer": 1,
+        "explanation": "A fast-forward merge occurs when the target branch hasn't diverged from the source branch, so Git can simply move the pointer forward linearly without creating a merge commit."
+      },
+      {
+        "question": "When you're on a branch and make commits, what happens to the main branch?",
+        "options": [
+          "Main branch gets updated automatically",
+          "Main branch remains unchanged",
+          "Main branch is deleted",
+          "Main branch conflicts occur"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Changes made on a branch are isolated to that branch. The main branch remains unchanged until you explicitly merge the changes."
+      },
+      {
+        "question": "What indicates merge conflicts in a file?",
+        "options": [
+          "Lines starting with #",
+          "<<<<<<< and >>>>>>> markers",
+          "Error messages in comments", 
+          "File becomes read-only"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Git uses conflict markers like <<<<<<< HEAD, =======, and >>>>>>> branch-name to show conflicting sections that need manual resolution."
+      }
+    ]
+  }
+}

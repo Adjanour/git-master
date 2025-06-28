@@ -1,0 +1,69 @@
+name: "Basic Git Branching"
+description: "Learn the fundamentals of creating and working with Git branches"
+difficulty: "beginner"
+category: "branching"
+estimated_time: "5-8 minutes"
+
+# Initial repository setup
+setup:
+  - command: "echo '# My Project' > README.md"
+    description: "Create initial README"
+  - command: "echo def hello(): > main.py && echo     print(\"Hello World!\") >> main.py"
+    description: "Create main Python file"
+  - command: "git add ."
+    description: "Stage initial files"
+  - command: "git commit -m 'Initial project setup'"
+    description: "Create initial commit"
+
+# Practice objectives
+objectives:
+  - id: "create_branch"
+    goal: "Create a new branch called 'feature/greeting'"
+    command: "git branch feature/greeting"
+    expected_result: "branch_created"
+    hint: "Use 'git branch feature/greeting' to create a new branch"
+    
+  - id: "switch_branch"
+    goal: "Switch to the feature/greeting branch"
+    command: "git checkout feature/greeting"
+    expected_result: "branch_switched"
+    hint: "Use 'git checkout feature/greeting' to switch to the branch"
+    
+  - id: "make_changes"
+    goal: "Modify main.py to add a custom greeting function"
+    validation_type: "file_content"
+    target_file: "main.py"
+    expected_content_contains: ["greeting"]
+    hint: "Edit main.py and add a function with 'greeting' in its name"
+    
+  - id: "commit_changes"
+    goal: "Commit your changes to the feature branch"
+    command: "git commit -am 'Add greeting function'"
+    expected_result: "changes_committed"
+    hint: "Stage and commit your changes with 'git add .' then 'git commit -m \"your message\"'"
+    
+  - id: "switch_main"
+    goal: "Switch back to the main branch"
+    command: "git checkout main"
+    expected_result: "branch_switched"
+    hint: "Use 'git checkout main' to return to the main branch"
+
+# Success criteria
+success_criteria:
+  - type: "branch_exists"
+    description: "feature/greeting branch was created"
+  - type: "file_contains"
+    file: "main.py"
+    content: ["greeting"]
+    description: "main.py contains greeting functionality"
+  - type: "commits_made"
+    description: "Changes were committed to the feature branch"
+
+# Evaluation hints
+evaluation:
+  - condition: "branch_created"
+    message: "Great! You've created a new branch. Now switch to it."
+  - condition: "on_feature_branch"
+    message: "Perfect! You're now on the feature branch. Make some changes!"
+  - condition: "changes_committed"
+    message: "Excellent! Your changes are committed. Switch back to main to see the difference."

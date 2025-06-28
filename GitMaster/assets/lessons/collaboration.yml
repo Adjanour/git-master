@@ -1,0 +1,238 @@
+title: "Git Collaboration - Working with Teams"
+theory: |
+  Git collaboration involves working with remote repositories to share code with team members. Remote repositories are hosted versions of your project that everyone can access, typically on platforms like GitHub, GitLab, or Bitbucket.
+
+  ### Key Concepts
+
+  **Remote**: A version of your project hosted elsewhere (GitHub, GitLab, etc.)
+  
+  **Origin**: The default name for your main remote repository
+  
+  **Clone**: Creating a local copy of a remote repository
+  
+  **Push**: Uploading your local commits to a remote repository
+  
+  **Pull**: Downloading and merging changes from a remote repository
+  
+  **Fetch**: Downloading changes without merging them
+  
+  **Fork**: Creating your own copy of someone else's repository
+
+  ### Collaboration Workflow
+
+  1. Clone or fork a repository
+  2. Create a feature branch
+  3. Make changes and commit
+  4. Push to remote
+  5. Create a pull request
+  6. Review and merge
+
+examples:
+  - title: "Cloning and Setting Up Remotes"
+    description: "Start collaborating by cloning a repository and understanding remotes."
+    code: |
+      # Clone a repository from GitHub
+      git clone https://github.com/username/project.git
+      cd project
+      
+      # Check remote repositories
+      git remote -v
+      
+      # Add additional remotes (e.g., upstream)
+      git remote add upstream https://github.com/original/project.git
+      
+      # Check remotes again
+      git remote -v
+      
+      # Get remote repository info
+      git remote show origin
+    output: |
+      Cloning into 'project'...
+      remote: Counting objects: 100, done.
+      remote: Compressing objects: 100% (50/50), done.
+      
+      origin  https://github.com/username/project.git (fetch)
+      origin  https://github.com/username/project.git (push)
+      
+      origin  https://github.com/username/project.git (fetch)
+      origin  https://github.com/username/project.git (push)
+      upstream  https://github.com/original/project.git (fetch)
+      upstream  https://github.com/original/project.git (push)
+    explanation: "Cloning creates a local copy with 'origin' remote automatically set. You can add more remotes for collaboration scenarios."
+    diagram:
+      - "Remote Repository (GitHub)"
+      - "        │"
+      - "        │ git clone"
+      - "        ▼"
+      - "Local Repository"
+      - "   origin ──────► GitHub"
+      - "   upstream ───► Original Project"
+
+  - title: "Pushing Changes to Remote"
+    description: "Share your work by pushing commits to the remote repository."
+    code: |
+      # Make some changes
+      echo "# New Feature" > feature.md
+      git add feature.md
+      git commit -m "Add new feature documentation"
+      
+      # Push to the remote repository
+      git push origin main
+      
+      # For first push of a new branch
+      git checkout -b feature/awesome-feature
+      echo "Awesome feature code" > awesome.txt
+      git add awesome.txt
+      git commit -m "Implement awesome feature"
+      
+      # Push new branch to remote
+      git push -u origin feature/awesome-feature
+    output: |
+      [main abc123d] Add new feature documentation
+       1 file changed, 1 insertion(+)
+       create mode 100644 feature.md
+      
+      Enumerating objects: 4, done.
+      Counting objects: 100% (4/4), done.
+      Writing objects: 100% (3/3), 300 bytes | 300.00 KiB/s, done.
+      To https://github.com/username/project.git
+         def456a..abc123d  main -> main
+      
+      Branch 'feature/awesome-feature' set up to track remote branch 'feature/awesome-feature' from 'origin'.
+    explanation: "The -u flag sets up tracking so future pushes can just use 'git push' without specifying remote and branch."
+    diagram:
+      - "Local Repository    Remote Repository"
+      - "     main ────────────► main"
+      - "     │                   │"
+      - "     │ git push          │"
+      - "     ▼                   ▼"
+      - "feature/awesome ────► feature/awesome"
+
+  - title: "Pulling Changes from Remote"
+    description: "Stay synchronized with team changes by pulling from remote."
+    code: |
+      # Check for changes without merging
+      git fetch origin
+      
+      # See what's new
+      git log --oneline main..origin/main
+      
+      # Pull changes (fetch + merge)
+      git pull origin main
+      
+      # Alternative: pull with rebase for cleaner history
+      git pull --rebase origin main
+      
+      # Handle pull conflicts (if any)
+      git status
+      # ... resolve conflicts ...
+      git add .
+      git rebase --continue
+    output: |
+      From https://github.com/username/project
+       * branch            main       -> FETCH_HEAD
+      
+      abc123d Fix bug in authentication
+      def456e Update README with new instructions
+      
+      Updating 789abc1..def456e
+      Fast-forward
+       auth.js | 2 +-
+       README.md | 5 +++++
+       2 files changed, 6 insertions(+), 1 deletion(-)
+    explanation: "Fetch downloads changes without merging. Pull combines fetch and merge. Rebase creates a cleaner, linear history."
+    diagram:
+      - "Before pull:"
+      - "Local:  A---B---C"
+      - "Remote: A---B---C---D---E"
+      - ""
+      - "After pull:"
+      - "Local:  A---B---C---D---E"
+      - "Remote: A---B---C---D---E"
+
+  - title: "Handling Pull Requests"
+    description: "Collaborate using pull requests for code review and integration."
+    code: |
+      # Create feature branch
+      git checkout -b feature/user-login
+      
+      # Make changes
+      echo "Login functionality" > login.js
+      git add login.js
+      git commit -m "Implement user login"
+      
+      # Push feature branch
+      git push -u origin feature/user-login
+      
+      # After creating PR on GitHub, merge locally
+      git checkout main
+      git pull origin main
+      
+      # Delete merged feature branch
+      git branch -d feature/user-login
+      git push origin --delete feature/user-login
+    output: |
+      Switched to a new branch 'feature/user-login'
+      
+      [feature/user-login xyz789a] Implement user login
+       1 file changed, 1 insertion(+)
+       create mode 100644 login.js
+      
+      Branch 'feature/user-login' set up to track remote branch.
+      
+      # After PR is merged:
+      Updating abc123d..def456e
+      Fast-forward
+       login.js | 1 +
+       1 file changed, 1 insertion(+)
+      
+      Deleted branch feature/user-login (was xyz789a).
+      To https://github.com/username/project.git
+       - [deleted]         feature/user-login
+    explanation: "Pull requests enable code review and discussion before merging. Clean up by deleting merged branches."
+    diagram:
+      - "Pull Request Workflow:"
+      - "1. Create feature branch"
+      - "2. Push to remote"
+      - "3. Open pull request"
+      - "4. Code review & discussion"
+      - "5. Merge to main"
+      - "6. Delete feature branch"
+
+quiz:
+  questions:
+    - question: "What does 'git clone' do?"
+      options:
+        - "Creates a new branch"
+        - "Copies a remote repository to your local machine"
+        - "Uploads your changes to GitHub"
+        - "Merges two branches together"
+      correctAnswer: 1
+      explanation: "git clone creates a complete local copy of a remote repository, including all history and branches."
+
+    - question: "What's the difference between 'git fetch' and 'git pull'?"
+      options:
+        - "No difference, they're the same"
+        - "fetch downloads changes and merges, pull only downloads"
+        - "fetch only downloads changes, pull downloads and merges"
+        - "fetch is for branches, pull is for files"
+      correctAnswer: 2
+      explanation: "git fetch downloads changes from remote without merging them. git pull does fetch + merge in one command."
+
+    - question: "What does the -u flag do in 'git push -u origin main'?"
+      options:
+        - "Updates the remote repository"
+        - "Sets up tracking between local and remote branch"
+        - "Uploads files faster"
+        - "Creates a new branch on remote"
+      correctAnswer: 1
+      explanation: "The -u flag sets up tracking so the local branch knows which remote branch it corresponds to, allowing future 'git push' commands without specifying the remote and branch."
+
+    - question: "What is a pull request?"
+      options:
+        - "A way to download code from remote"
+        - "A request to merge changes with code review"
+        - "A command to pull changes automatically"
+        - "A type of Git branch"
+      correctAnswer: 1
+      explanation: "A pull request is a feature of Git hosting platforms that allows developers to propose changes and request code review before merging into the main branch."

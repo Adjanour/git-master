@@ -1,0 +1,48 @@
+modules:
+  - name: "basics"
+    title: "Git Fundamentals"
+    description: "Learn the core concepts and basic commands of Git version control"
+    level: "Beginner"
+    duration: "2-3 hours"
+    file: "basic-git.md"
+    order: 1
+    
+  - name: "branching"
+    title: "Branch Management"
+    description: "Master Git branching for parallel development and feature isolation"
+    level: "Intermediate"
+    duration: "1-2 hours"
+    file: "branching.json"
+    order: 2
+    
+  - name: "collaboration"
+    title: "Team Collaboration"
+    description: "Work effectively with teams using remotes, pushing, and pull requests"
+    level: "Intermediate"
+    duration: "2-3 hours"
+    file: "collaboration.yml"
+    order: 3
+    
+  - name: "workflows"
+    title: "Git Workflows"
+    description: "Learn popular Git workflows and best practices for team development"
+    level: "Intermediate"
+    duration: "1-2 hours"
+    file: "workflows.md"
+    order: 4
+    
+  - name: "advanced"
+    title: "Advanced Techniques"
+    description: "Master advanced Git features like rebasing, cherry-picking, and hooks"
+    level: "Advanced"
+    duration: "3-4 hours"
+    file: "advanced.yml"
+    order: 5
+    
+  - name: "troubleshooting"
+    title: "Common Problems"
+    description: "Solve common Git problems and recover from mistakes"
+    level: "All levels"
+    duration: "1-2 hours"
+    file: "troubleshooting.json"
+    order: 6

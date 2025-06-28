@@ -1,0 +1,85 @@
+name: "Merge Conflict Resolution"
+description: "Practice resolving merge conflicts between branches"
+difficulty: "intermediate"
+category: "branching"
+estimated_time: "10-15 minutes"
+
+# Initial repository setup
+setup:
+  - command: "echo 'Welcome to GitMaster Practice Repository' > README.md"
+    description: "Create initial README"
+  - command: "echo 'print(\"Hello World\")' > app.py"
+    description: "Create initial Python file"
+  - command: "git add ."
+    description: "Stage initial files"
+  - command: "git commit -m 'Initial commit'"
+    description: "Create initial commit"
+  - command: "git checkout -b feature/login"
+    description: "Create feature branch"
+  - command: "echo 'print(\"Login feature\")' > app.py"
+    description: "Modify app.py in feature branch"
+  - command: "git add app.py"
+    description: "Stage changes"
+  - command: "git commit -m 'Add login feature'"
+    description: "Commit login feature"
+  - command: "git checkout main"
+    description: "Switch back to main"
+  - command: "echo 'print(\"Main branch changes\")' > app.py"
+    description: "Modify app.py in main branch differently"
+  - command: "git add app.py"
+    description: "Stage main changes"
+  - command: "git commit -m 'Update main branch'"
+    description: "Commit main changes"
+
+# Practice objectives
+objectives:
+  - id: "merge_attempt"
+    goal: "Attempt to merge feature/login into main"
+    command: "git merge feature/login"
+    expected_result: "merge_conflict"
+    hint: "Try running 'git merge feature/login' - you should see a conflict"
+    
+  - id: "check_status"
+    goal: "Check git status to see conflicted files"
+    command: "git status"
+    expected_result: "shows_conflicts"
+    hint: "Run 'git status' to see which files have conflicts"
+    
+  - id: "resolve_conflict"
+    goal: "Resolve the merge conflict in app.py"
+    validation_type: "file_content"
+    target_file: "app.py"
+    expected_content_contains: ["login", "main"]
+    hint: "Edit app.py to resolve conflicts. Keep both login and main functionality"
+    
+  - id: "stage_resolution"
+    goal: "Stage the resolved file"
+    command: "git add app.py"
+    expected_result: "file_staged"
+    hint: "Use 'git add app.py' to mark the conflict as resolved"
+    
+  - id: "complete_merge"
+    goal: "Complete the merge with a commit"
+    command: "git commit"
+    expected_result: "merge_completed"
+    hint: "Run 'git commit' to complete the merge (or 'git commit -m \"Resolve merge conflict\"')"
+
+# Success criteria
+success_criteria:
+  - type: "branch_merged"
+    description: "feature/login branch successfully merged into main"
+  - type: "no_conflicts"
+    description: "No remaining merge conflicts"
+  - type: "file_contains"
+    file: "app.py"
+    content: ["login", "main"]
+    description: "app.py contains both login and main functionality"
+
+# Evaluation hints
+evaluation:
+  - condition: "merge_in_progress"
+    message: "Great! You've started the merge. Now resolve the conflicts in the files."
+  - condition: "conflicts_resolved"
+    message: "Excellent! Conflicts resolved. Don't forget to commit your changes."
+  - condition: "merge_completed"
+    message: "Perfect! You've successfully resolved the merge conflict and completed the merge."
