@@ -13,6 +13,9 @@ namespace GitMaster.Internal.Lessons;
 /// </summary>
 public class YamlLessonService : ILessonService
 {
+    private const int DefaultQuizScore = 0;
+    private static readonly TimeSpan PlaceholderTimeSpent = TimeSpan.Zero;
+    
     private readonly IDeserializer _yamlDeserializer;
     private readonly MarkdownPipeline _markdownPipeline;
     private readonly string _lessonsPath;
