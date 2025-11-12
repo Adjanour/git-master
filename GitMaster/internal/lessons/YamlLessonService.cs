@@ -190,7 +190,7 @@ public class YamlLessonService : ILessonService
                 ModuleName: moduleName,
                 ChapterNumber: chapterNumber,
                 CompletedAt: completedAt,
-                QuizScore: 0, // Would be calculated from actual quiz completion
+                QuizScore: DefaultQuizScore, // Placeholder for actual quiz score calculation
                 TimeSpent: TimeSpan.Zero // Would be tracked from session start
             );
         }
