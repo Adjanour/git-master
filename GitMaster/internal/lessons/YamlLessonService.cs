@@ -191,7 +191,7 @@ public class YamlLessonService : ILessonService
                 ChapterNumber: chapterNumber,
                 CompletedAt: completedAt,
                 QuizScore: DefaultQuizScore, // Placeholder for actual quiz score calculation
-                TimeSpent: TimeSpan.Zero // Would be tracked from session start
+                TimeSpent: PlaceholderTimeSpent // Placeholder for time tracking, to be implemented
             );
         }
         catch (Exception ex)
