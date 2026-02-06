@@ -68,39 +68,66 @@ public class ResetProgressCommand : Command<ResetProgressCommand.Settings>
     {
         AnsiConsole.MarkupLine("[blue]Creating progress backup...[/]");
         
-        var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        var backupFile = $"gitmaster_progress_backup_{timestamp}.json";
-        
-        // TODO: Implement actual backup creation
-        AnsiConsole.MarkupLine($"[green]✓ Backup created: {backupFile}[/]");
+        try
+        {
+            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            var backupFile = $"gitmaster_progress_backup_{timestamp}.json";
+            
+            // Get the progress file path
+            var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var gitMasterPath = Path.Combine(localAppDataPath, "GitMaster");
+            var progressPath = Path.Combine(gitMasterPath, "progress.json");
+            
+            if (File.Exists(progressPath))
+            {
+                // Create backup in the same directory
+                var backupPath = Path.Combine(gitMasterPath, backupFile);
+                File.Copy(progressPath, backupPath, overwrite: true);
+                
+                AnsiConsole.MarkupLine($"[green]✓ Backup created: {backupPath}[/]");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[yellow]⚠️  No progress file found to backup[/]");
+            }
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.MarkupLine($"[red]❌ Backup failed: {ex.Message}[/]");
+        }
     }
 
     private void PerformReset(string? module)
     {
+        var progressService = new GitMaster.Services.ProgressService();
+        
         AnsiConsole.Status()
             .Start("Resetting progress...", ctx =>
             {
                 ctx.Spinner(Spinner.Known.Star);
                 ctx.SpinnerStyle(Style.Parse("green"));
                 
-                // Simulate reset process
-                Thread.Sleep(1000);
+                Thread.Sleep(500); // Brief delay for visual feedback
                 
                 if (string.IsNullOrEmpty(module))
                 {
-                    // TODO: Reset all progress
+                    // Reset all progress
                     ctx.Status("Clearing all modules...");
-                    Thread.Sleep(500);
+                    Thread.Sleep(300);
                     ctx.Status("Resetting practice data...");
-                    Thread.Sleep(500);
+                    Thread.Sleep(300);
                     ctx.Status("Clearing statistics...");
-                    Thread.Sleep(500);
+                    Thread.Sleep(300);
+                    
+                    progressService.ResetAllProgress();
                 }
                 else
                 {
-                    // TODO: Reset specific module
+                    // Reset specific module
                     ctx.Status($"Resetting module: {module}...");
-                    Thread.Sleep(1000);
+                    Thread.Sleep(500);
+                    
+                    progressService.ResetProgress(module);
                 }
             });
 

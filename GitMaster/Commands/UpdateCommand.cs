@@ -63,8 +63,9 @@ public class UpdateCommand : Command<UpdateCommand.Settings>
 
     private string GetCurrentVersion()
     {
-        // TODO: Get actual version from assembly or config
-        return "1.0.0";
+        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        var version = assembly.GetName().Version;
+        return version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.0.0";
     }
 
     private string? CheckForUpdates(bool includePreRelease)
@@ -77,12 +78,45 @@ public class UpdateCommand : Command<UpdateCommand.Settings>
                 ctx.Spinner(Spinner.Known.Star);
                 ctx.SpinnerStyle(Style.Parse("cyan"));
                 
-                // TODO: Implement actual update checking
-                // This would typically call GitHub API or package manager
-                Thread.Sleep(2000);
-                
-                // Simulate finding an update
-                latestVersion = includePreRelease ? "1.1.0-beta.1" : "1.0.1";
+                try
+                {
+                    // Check GitHub API for latest release
+                    using var client = new HttpClient();
+                    client.DefaultRequestHeaders.Add("User-Agent", "GitMaster-CLI");
+                    
+                    var url = includePreRelease 
+                        ? "https://api.github.com/repos/Adjanour/git-master/releases"
+                        : "https://api.github.com/repos/Adjanour/git-master/releases/latest";
+                    
+                    var response = client.GetAsync(url).Result;
+                    
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonContent = response.Content.ReadAsStringAsync().Result;
+                        
+                        if (includePreRelease)
+                        {
+                            // Parse array of releases and get the first one
+                            var releases = JsonSerializer.Deserialize<JsonElement[]>(jsonContent);
+                            if (releases != null && releases.Length > 0)
+                            {
+                                latestVersion = releases[0].GetProperty("tag_name").GetString()?.TrimStart('v');
+                            }
+                        }
+                        else
+                        {
+                            // Parse single latest release
+                            var release = JsonSerializer.Deserialize<JsonElement>(jsonContent);
+                            latestVersion = release.GetProperty("tag_name").GetString()?.TrimStart('v');
+                        }
+                    }
+                }
+                catch
+                {
+                    // If GitHub API fails, fall back to indicating no update available
+                    // This prevents errors in offline scenarios
+                    latestVersion = null;
+                }
             });
             
         return latestVersion;
@@ -145,8 +179,42 @@ public class UpdateCommand : Command<UpdateCommand.Settings>
     {
         AnsiConsole.MarkupLine($"\n[yellow]What's new in {version}:[/]");
         
-        // TODO: Load actual release notes
-        var panel = new Panel(new Markup(
+        try
+        {
+            // Try to fetch release notes from GitHub
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "GitMaster-CLI");
+            
+            var url = $"https://api.github.com/repos/Adjanour/git-master/releases/tags/v{version}";
+            var response = client.GetAsync(url).Result;
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonContent = response.Content.ReadAsStringAsync().Result;
+                var release = JsonSerializer.Deserialize<JsonElement>(jsonContent);
+                var body = release.GetProperty("body").GetString() ?? "No release notes available.";
+                
+                // Clean up markdown formatting for console display
+                var lines = body.Split('\n').Take(10); // Show first 10 lines
+                var releaseNotes = string.Join("\n", lines.Select(l => l.TrimStart('#', ' ')));
+                
+                var notesPanel = new Panel(new Markup($"[dim]{Markup.Escape(releaseNotes)}[/]"))
+                {
+                    Header = new PanelHeader(" Release Notes "),
+                    Border = BoxBorder.Rounded
+                };
+                
+                AnsiConsole.Write(notesPanel);
+                return;
+            }
+        }
+        catch
+        {
+            // Fall back to generic notes if API call fails
+        }
+        
+        // Fallback release notes
+        var fallbackPanel = new Panel(new Markup(
             "[dim]• Improved practice scenarios\n" +
             "• Enhanced cheat sheets\n" +
             "• Bug fixes and performance improvements[/]"
@@ -156,6 +224,6 @@ public class UpdateCommand : Command<UpdateCommand.Settings>
             Border = BoxBorder.Rounded
         };
         
-        AnsiConsole.Write(panel);
+        AnsiConsole.Write(fallbackPanel);
     }
 }
