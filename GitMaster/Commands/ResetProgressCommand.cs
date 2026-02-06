@@ -76,7 +76,7 @@ public class ResetProgressCommand : Command<ResetProgressCommand.Settings>
         
         try
         {
-            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            var timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
             var backupFile = $"gitmaster_progress_backup_{timestamp}.json";
             
             // Get the progress file path
