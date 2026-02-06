@@ -7,6 +7,11 @@ namespace GitMaster.Commands;
 
 public class UpdateCommand : Command<UpdateCommand.Settings>
 {
+    private static readonly HttpClient _httpClient = new HttpClient
+    {
+        DefaultRequestHeaders = { { "User-Agent", "GitMaster-CLI" } }
+    };
+
     public class Settings : GlobalSettings
     {
         [CommandOption("--check-only")]
@@ -81,14 +86,11 @@ public class UpdateCommand : Command<UpdateCommand.Settings>
                 try
                 {
                     // Check GitHub API for latest release
-                    using var client = new HttpClient();
-                    client.DefaultRequestHeaders.Add("User-Agent", "GitMaster-CLI");
-                    
                     var url = includePreRelease 
                         ? "https://api.github.com/repos/Adjanour/git-master/releases"
                         : "https://api.github.com/repos/Adjanour/git-master/releases/latest";
                     
-                    var response = client.GetAsync(url).Result;
+                    var response = _httpClient.GetAsync(url).Result;
                     
                     if (response.IsSuccessStatusCode)
                     {
@@ -111,10 +113,19 @@ public class UpdateCommand : Command<UpdateCommand.Settings>
                         }
                     }
                 }
-                catch
+                catch (HttpRequestException)
                 {
-                    // If GitHub API fails, fall back to indicating no update available
-                    // This prevents errors in offline scenarios
+                    // Network error - no update available or GitHub unreachable
+                    latestVersion = null;
+                }
+                catch (TaskCanceledException)
+                {
+                    // Timeout - treat as no update available
+                    latestVersion = null;
+                }
+                catch (JsonException)
+                {
+                    // Invalid JSON response - treat as no update available
                     latestVersion = null;
                 }
             });
@@ -182,11 +193,8 @@ public class UpdateCommand : Command<UpdateCommand.Settings>
         try
         {
             // Try to fetch release notes from GitHub
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "GitMaster-CLI");
-            
             var url = $"https://api.github.com/repos/Adjanour/git-master/releases/tags/v{version}";
-            var response = client.GetAsync(url).Result;
+            var response = _httpClient.GetAsync(url).Result;
             
             if (response.IsSuccessStatusCode)
             {
@@ -208,9 +216,13 @@ public class UpdateCommand : Command<UpdateCommand.Settings>
                 return;
             }
         }
-        catch
+        catch (HttpRequestException)
         {
-            // Fall back to generic notes if API call fails
+            // Network error - fall back to generic notes
+        }
+        catch (JsonException)
+        {
+            // Invalid JSON - fall back to generic notes
         }
         
         // Fallback release notes

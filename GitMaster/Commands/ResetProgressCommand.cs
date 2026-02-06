@@ -6,6 +6,12 @@ namespace GitMaster.Commands;
 
 public class ResetProgressCommand : Command<ResetProgressCommand.Settings>
 {
+    private readonly Services.ProgressService _progressService;
+
+    public ResetProgressCommand()
+    {
+        _progressService = new Services.ProgressService();
+    }
     public class Settings : GlobalSettings
     {
         [CommandOption("-m|--module")]
@@ -99,8 +105,6 @@ public class ResetProgressCommand : Command<ResetProgressCommand.Settings>
 
     private void PerformReset(string? module)
     {
-        var progressService = new GitMaster.Services.ProgressService();
-        
         AnsiConsole.Status()
             .Start("Resetting progress...", ctx =>
             {
@@ -119,7 +123,7 @@ public class ResetProgressCommand : Command<ResetProgressCommand.Settings>
                     ctx.Status("Clearing statistics...");
                     Thread.Sleep(300);
                     
-                    progressService.ResetAllProgress();
+                    _progressService.ResetAllProgress();
                 }
                 else
                 {
@@ -127,7 +131,7 @@ public class ResetProgressCommand : Command<ResetProgressCommand.Settings>
                     ctx.Status($"Resetting module: {module}...");
                     Thread.Sleep(500);
                     
-                    progressService.ResetProgress(module);
+                    _progressService.ResetProgress(module);
                 }
             });
 
