@@ -245,6 +245,12 @@ This project is licensed under the terms specified in [LICENSE.txt](../LICENSE.t
 - [Issues](https://github.com/Adjanour/git-master/issues)
 - [Discussions](https://github.com/Adjanour/git-master/discussions)
 
+## Additional Resources
+
+- [Release Process Guide](RELEASE.md) - How to create releases
+- [GitHub Pages Setup](GITHUB_PAGES.md) - Documentation deployment setup
+- [Contributing Guide](../CONTRIBUTING.md) - How to contribute to the project
+
 ---
 
 **Built with ❤️ using .NET and Spectre.Console**
