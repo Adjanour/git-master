@@ -91,6 +91,14 @@ This project follows standard .NET development practices. The main application i
 
 ## Contributing
 
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Setting up your development environment
+- Coding standards and best practices
+- Submitting pull requests
+- Reporting issues
+
+Quick steps:
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
