@@ -1,0 +1,7 @@
+title: GitMaster
+description: A comprehensive Git learning and practice application
+theme: jekyll-theme-cayman
+show_downloads: true
+github:
+  repository_url: https://github.com/Adjanour/git-master
+  is_project_page: true

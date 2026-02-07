@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main, master, develop ]
 
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     name: Build and Test
@@ -26,22 +29,25 @@ jobs:
         dotnet-version: ${{ matrix.dotnet-version }}
         
     - name: Restore dependencies
+      working-directory: ./GitMaster
       run: dotnet restore
       
     - name: Build
+      working-directory: ./GitMaster
       run: dotnet build --configuration Release --no-restore
       
     - name: Test
+      working-directory: ./GitMaster
       run: dotnet test --configuration Release --no-build --verbosity normal
       
-    - name: Publish (Ubuntu only)
-      if: matrix.os == 'ubuntu-latest'
-      run: dotnet publish --configuration Release --output ./publish
+    - name: Publish artifacts
+      working-directory: ./GitMaster
+      run: |
+        dotnet publish --configuration Release --output ./publish/${{ matrix.os }}
       
-    - name: Upload build artifacts (Ubuntu only)
-      if: matrix.os == 'ubuntu-latest'
+    - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: gitmaster-build
-        path: ./publish/
+        name: gitmaster-${{ matrix.os }}
+        path: ./GitMaster/publish/${{ matrix.os }}/
         retention-days: 7

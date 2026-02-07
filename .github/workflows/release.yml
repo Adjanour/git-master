@@ -1,0 +1,113 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Get version from tag
+      id: get_version
+      run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+        body: |
+          # GitMaster ${{ steps.get_version.outputs.version }}
+          
+          ## Downloads
+          
+          Download the appropriate binary for your platform:
+          - **Windows**: gitmaster-win-x64.zip
+          - **Linux**: gitmaster-linux-x64.tar.gz
+          - **macOS**: gitmaster-osx-x64.tar.gz
+          
+          ## Installation
+          
+          1. Download the binary for your platform
+          2. Extract the archive
+          3. Add the executable to your PATH
+          4. Run `gitmaster --help` to get started
+          
+          ## What's Changed
+          
+          See the commit history for details.
+
+  build-and-upload:
+    name: Build and Upload - ${{ matrix.os }}
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            runtime: linux-x64
+            artifact_name: gitmaster-linux-x64
+            asset_name: gitmaster-linux-x64.tar.gz
+          - os: windows-latest
+            runtime: win-x64
+            artifact_name: gitmaster-win-x64
+            asset_name: gitmaster-win-x64.zip
+          - os: macos-latest
+            runtime: osx-x64
+            artifact_name: gitmaster-osx-x64
+            asset_name: gitmaster-osx-x64.tar.gz
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Publish
+      working-directory: ./GitMaster
+      run: |
+        dotnet publish --configuration Release --runtime ${{ matrix.runtime }} --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true --output ./publish/${{ matrix.runtime }}
+    
+    - name: Create archive (Linux/macOS)
+      if: runner.os != 'Windows'
+      working-directory: ./GitMaster/publish/${{ matrix.runtime }}
+      run: |
+        tar -czf ../${{ matrix.asset_name }} *
+    
+    - name: Create archive (Windows)
+      if: runner.os == 'Windows'
+      working-directory: ./GitMaster/publish/${{ matrix.runtime }}
+      run: |
+        Compress-Archive -Path * -DestinationPath ../${{ matrix.asset_name }}
+    
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./GitMaster/publish/${{ matrix.asset_name }}
+        asset_name: ${{ matrix.asset_name }}
+        asset_content_type: application/octet-stream
