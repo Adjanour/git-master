@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        dotnet-version: ['8.0.x']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ matrix.dotnet-version }}
+        
+    - name: Restore dependencies
+      working-directory: ./GitMaster
+      run: dotnet restore
+      
+    - name: Build
+      working-directory: ./GitMaster
+      run: dotnet build --configuration Release --no-restore
+      
+    - name: Test
+      working-directory: ./GitMaster
+      run: dotnet test --configuration Release --no-build --verbosity normal
+      
+    - name: Publish artifacts
+      working-directory: ./GitMaster
+      run: |
+        dotnet publish --configuration Release --output ./publish/${{ matrix.os }}
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: gitmaster-${{ matrix.os }}
+        path: ./GitMaster/publish/${{ matrix.os }}/
+        retention-days: 7
